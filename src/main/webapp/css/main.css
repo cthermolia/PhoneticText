@@ -1,0 +1,261 @@
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../open-sans/OpenSans-Regular.ttf');
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Open Sans';
+}
+
+body {
+    padding-top: 100px;
+}
+
+#menu {
+  
+  background: #0078a3;
+  height:70px;
+  
+}
+
+.help-block {
+    color: maroon;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+   
+    color:#F8F8F8;
+   
+ 
+}
+
+.navbar-inverse .navbar-brand {
+    color: #000000; 
+}
+
+#mainmenunav > li > a {
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.custom > li > a {
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+#footer{
+}
+
+.border-top-footer {
+    border-top: 1px solid #ccc;
+}
+
+.drop-box {
+    background: #F8F8F8;
+    border: 5px dashed #DDD;
+    width: 200px;
+    height: 65px;
+    text-align: center;
+    padding-top: 25px;
+    margin: 10px;
+}
+.dragover {
+    border: 5px dashed blue;
+}
+
+.btn-action { 
+    color:#FFEFD7; 
+    background-image: -webkit-linear-gradient(top, #FF9B22 0%, #FF8C00 100%); 
+    background-image: linear-gradient(top, #FF9B22 0%, #FF8C00 100%); 
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffFF9B22', endColorstr='#ffFF8C00', GradientType=0); 
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false); 
+    background-repeat: repeat-x; 
+    border:0 none; 
+}
+.btn-action:hover,
+.btn-action:focus { color:#fff; background: #FF9B22; }
+.btn-action:active {	background: #FF8C00; }
+
+.top-margin { margin-top:20px; }
+
+.text-white {
+    color: #fff;
+}
+
+.text-grey {
+    color: #ccc;
+}
+
+.text-small {
+    font-size: 11px;
+}
+
+.flag-overlay {
+    opacity: 0.3;
+}
+
+tr.selected {
+    font-weight: bold;
+}
+
+.notValidated {
+    background-color: red!important;
+}
+
+.enabled{
+   font-color:green;
+    
+}
+.noEenabled{
+   font-color:red;
+}
+.weekend {
+    background-color: lightgray;
+}
+
+.dayOff {
+    background-color: yellowgreen;
+}
+
+.lightsalmon {
+    background: #ffA07a;
+}
+
+.yellow {
+    background: #ffd700;
+}
+
+.orange {
+    background: #ffa500;
+}
+
+.brown {
+    
+    background: #d2b48c;
+}
+
+.blue {
+    background: #4682b4;
+}
+
+.now-day {
+    background: cadetblue;
+}
+
+.new-request {
+    background: #4682b4;
+}
+
+.inprogress-request {
+    background: lightgray;
+}
+
+.rejected-request {
+    background: tomato;
+}
+
+.confirmed-request {
+    background-color: lightgreen;
+}
+
+.is-default-subteam {
+    background-color: lightyellow;
+}
+
+span.active-user {
+    color: green;
+}
+
+span.inactive-user {
+   color:red;
+}
+
+.plan-error-data {
+    background: tomato;
+}
+
+.scrolltableLeft {
+    width: 300px;
+    overflow-x: hidden;
+    height: 100%;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+}
+.scrolltable {
+    margin-left: 300px;
+    overflow-x: scroll;
+    height: 100%;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+}
+.scrolltable > .bodytable {
+    width: -webkit-fit-content;
+    overflow-y: scroll;
+    flex: 1;
+    -webkit-flex: 1;
+}
+.scrolltableLeft > .bodytable {
+    width: -webkit-fit-content;
+    overflow-y: hidden;
+    flex: 1;
+    -webkit-flex: 1;
+}
+.scrolltable th, .scrolltable td {
+    min-width: 255px;
+    height: 50px;
+    padding-left: 11px;
+}
+.scrolltable thead tr, .scrolltableLeft thead tr{
+    height:60px;
+    background-color: #555;
+    color:#fff;
+}
+.scrolltable tbody tr, .scrolltableLeft tbody tr{
+    height:35px;
+}
+
+.bodytable td{
+    height: 50px;
+    padding-left: 11px;
+}
+th.tdUserId, td.tdUserId{
+    padding-left: 11px;
+    min-width: 70px;
+    width: 70px;
+    height: 50px;
+}
+
+
+th.mediumSize, td.mediumSize{
+    padding-left: 11px;
+    max-width: 80px;
+    width: 80px;
+}
+tr.scrollHeader{
+    height: 50px;
+}
+/* an outside constraint to react against */
+#constrainer {
+    width: 95vw;
+    height: 80vh;
+    border: 1px solid lightgrey;
+}
+
+/* *************************** */
+
+.result-highlight {
+    font-weight: bold;
+}
+
+.highlight-text {
+    font-size: 13px;
+}

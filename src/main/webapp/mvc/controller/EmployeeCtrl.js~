@@ -1,0 +1,1916 @@
+var employeeCtrlMod = angular.module('employeeCtrlMod', ['userSrvMod', 'sexSrvMod', 'hiringSrvMod', 'jobTypeSrvMod', 'marriageStatusSrvMod', 'militaryServiceSrvMod', 'externalSourceSrvMod',
+    'employeeSrvMod', 'educationLevelSrvMod', 'contractTypeSrvMod', 'leaveTypeSrvMod', 'translationSrvMod', 'skillSrvMod', 'shiftNoteSrvMod',
+    'relationshipSrvMod', 'benefitSrvMod', 'resignSrvMod', 'languageSrvMod', 'noteSrvMod', 'recommendationSrvMod', 'dependantTypeSrvMod', 'requestsSrvMod', 'certificateSkillSrvMod', 'educationDegreeSrvMod', 'ngMessages']);
+/*
+ * Employee
+ */
+employeeCtrlMod.controller('EmployeeCtrl', function ($scope, $routeParams, UserSrv, SexSrv, HiringSrv, JobTypeSrv, MarriageStatusSrv, MilitaryServiceSrv, ExternalSourceSrv, EmployeeSrv,
+        EducationLevelSrv, ContractTypeSrv, LeaveTypeSrv, RelationshipSrv, BenefitSrv, ResignSrv, ShiftNoteSrv, SkillSrv, LanguageSrv,
+        NoteSrv, TranslationSrv, CertificateSkillSrv, EducationDegreeSrv, RecommendationSrv, DependantTypeSrv, RequestsSrv, toaster, Upload) {
+
+    $scope.user = {};
+    $scope.cnDoe = {};
+    $scope.idDoe = {};
+    $scope.msDoe = {};
+    $scope.hsDoe = {};
+    $scope.jtDoe = {};
+    $scope.ctDoe = {};
+    $scope.salDoe = {};
+    $scope.active = {};
+    $scope.editMode = {};
+    $scope.noteInfo = {};
+    $scope.leaveInfo = {};
+    $scope.payAccDoe = {};
+    $scope.notactive = {};
+    $scope.longleave = {};
+    $scope.disableMode = {};
+    $scope.benefitInfo = {};
+    $scope.resignReason = {};
+    $scope.contractType = {};
+    $scope.dependantInfo = {};
+    $scope.accessGroupInfo = {};
+    $scope.languageSkillInfo = {};
+    $scope.contactPersonInfo = {};
+    $scope.recommendationInfo = {};
+    $scope.workExperienceInfo = {};
+    $scope.educationDegreeInfo = {};
+    $scope.certificateSkillInfo = {};
+    $scope.externalCollabolator = {};
+    $scope.benefitSupportValuesInfo = {};
+    
+    $scope.part_time_4_id = 1;
+    $scope.part_time_6_id = 2;
+    $scope.full_time_8_id = 3;
+    $scope.full_time_12_id = 4;
+
+    $scope.one_fte = 1;
+    $scope.half_fte = 0.5;
+    $scope.one_half_fte = 1.5;
+    $scope.three_fourth_ftes = 0.75;
+    
+    $scope.sexList = [];
+    $scope.jobTypeList = [];
+    $scope.languageList = [];
+    $scope.leaveTypeList = [];
+    $scope.benefitTypeList = [];
+    $scope.resignReasonList = [];
+    $scope.relationshipList = [];
+    $scope.contractTypeList = [];
+    $scope.hiringSourceList = [];
+    $scope.hiringStatusList = [];
+    $scope.languageLevelList = [];
+    $scope.dependantTypeList = [];
+    $scope.educationLevelList = [];
+    $scope.externalSourceList = [];
+    $scope.marriageStatusList = [];
+    $scope.militaryServiceList = [];
+    
+    $scope.messageConfirm = "confirm.message";
+
+    $scope.skillInfo = {};
+    $scope.shiftNoteInfo = {};
+    $scope.skillsList = [];
+    $scope.shiftNotesList = [];
+
+    $scope.opened = [];
+    $scope.formats = ['dd/MM/yyyy', 'dd-MM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+    $scope.format = $scope.formats[0];
+
+    $scope.$watch('files', function () {
+        $scope.upload($scope.files);
+    });
+
+    $scope.__init__ = function () {
+        $scope.editMode = false;
+        $scope.resignReason = false;
+        $scope.contractType = false;
+        $scope.externalCollabolator = false;
+        $scope.idDoe = false;
+        $scope.msDoe = false;
+        $scope.hsDoe = false;
+        $scope.jtDoe = false;
+        $scope.ctDoe = false;
+        $scope.salDoe = false;
+        $scope.payAccDoe = false;
+        $scope.cnDoe = false;
+        $scope.active = false;
+        $scope.notactive = false;
+        $scope.longleave = false;
+        $scope.viewDetails();
+
+        UserSrv.getUserDetails($routeParams.id, function (response) {
+            $scope.user = response.data;
+            $scope.getHiringStatus();
+          
+            EmployeeSrv.getDependantPage($scope.user.id, 1, function (response2) {
+                $scope.user.familyStatus.dependants = response2.data;
+            });
+            EmployeeSrv.getDependantCount($scope.user.id, function(response3) {
+                $scope.onDependantsSetup(response3.data);
+            });
+            
+            EmployeeSrv.getBenefitsPage($scope.user.id, 1, function (response) {
+                $scope.user.benefits = response.data;
+            });
+            EmployeeSrv.getBenefitsCount($scope.user.id, function(response) {
+                $scope.onBenefitsSetup(response.data);
+            });
+            
+            EmployeeSrv.getContactsPage($scope.user.id, 1, function (response) {
+                $scope.user.contactPersons = response.data;
+            });
+            EmployeeSrv.getContactsCount($scope.user.id, function(response) {
+                $scope.onContactsSetup(response.data);
+            });
+            
+            RecommendationSrv.getRecommendationsPage($scope.user.id, 1, function (response) {
+                $scope.user.recommendations = response.data;
+            });
+            RecommendationSrv.getRecommendationsCount($scope.user.id, function(response) {
+                $scope.onRecommendationsSetup(response.data);
+            });
+            
+            EducationDegreeSrv.getDegreesPage($scope.user.id, 1, function (response) {
+                $scope.user.education.educationDegrees = response.data;
+            });
+            EducationDegreeSrv.getDegreesCount($scope.user.id, function(response) {
+                $scope.onDegreesSetup(response.data);
+            });
+            
+            LanguageSrv.getLanguagesPage($scope.user.id, 1, function (response) {
+                $scope.user.education.languageSkills = response.data;
+            });
+            LanguageSrv.getLanguagesCount($scope.user.id, function(response) {
+                $scope.onLanguageSetup(response.data);
+            });
+            
+            CertificateSkillSrv.getCertificatePage($scope.user.id, 1, function (response) {
+                $scope.user.education.certificateSkills = response.data;
+            });
+            CertificateSkillSrv.getCertificateCount($scope.user.id, function(response) {
+                $scope.onCertificateSetup(response.data);
+            });
+            
+            SkillSrv.getSkillPage($scope.user.id, 1, function (response) {
+                $scope.user.skills = response.data;
+            });
+            SkillSrv.getSkillCount($scope.user.id, function(response) {
+                $scope.onSkillSetup(response.data);
+            });
+            
+            ShiftNoteSrv.getShiftNotePage($scope.user.id, 1, function (response) {
+                $scope.user.shiftNotes = response.data;
+            });
+            ShiftNoteSrv.getShiftNoteCount($scope.user.id, function(response) {
+                $scope.onShiftNotesSetup(response.data);
+            });
+            
+            RequestsSrv.getLeaveRequestPage($scope.user.id, 1, function (response) {
+                $scope.user.hiring.leaveRequests = response.data;
+            });
+            RequestsSrv.getLeaveRequestCount($scope.user.id, function (response) {
+                $scope.onLeaveRequestSetup(response.data);
+            });
+            
+            EmployeeSrv.getWorkingExperiencePage($scope.user.id, 1, function (response) {
+                $scope.user.workingExperiences = response.data;
+            });
+            EmployeeSrv.getWorkingExperienceCount($scope.user.id, function (response) {
+                $scope.onWorkingExperienceSetup(response.data);
+            });
+            
+            NoteSrv.getUserNotesPage($scope.user.id, 1, function (response) {
+                $scope.user.notes = response.data;
+            });
+            NoteSrv.getUserNotesCount($scope.user.id, function (response) {
+                $scope.onUserNotesSetup(response.data);
+            });
+
+            if ($scope.user.hiring.resign !== null)
+                $scope.resignReason = true;
+
+            if ($scope.user.hiring.contract.expiringDate !== null)
+                $scope.contractType = true;
+            if ($scope.user.hiring.jobTypeDoe !== null)
+                $scope.jtDoe = true;
+
+            if ($scope.user.hiring.contract.salaryDoe !== null)
+                $scope.salDoe = true;
+
+            if ($scope.user.financialCard.payrollAccountDoe !== null)
+                $scope.payAccDoe = true;
+
+            if ($scope.user.hiring.contractTypeDoe !== null)
+                $scope.ctDoe = true;
+
+            HiringSrv.getExternalCollabolatorSource(function (response) {
+                if (response.status !== 0) {
+                    toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                    return;
+                }
+
+                if ($scope.user.hiring.hiringSource.id === response.data.id)
+                    $scope.externalCollabolator = true;
+            });
+        });
+
+        SexSrv.getList(function (response) {
+            $scope.sexList = response.data;
+        });
+
+        JobTypeSrv.getList(function (response) {
+            $scope.jobTypeList = response.data;
+        });
+
+        HiringSrv.getSourceList(function (response) {
+            $scope.hiringSourceList = response.data;
+        });
+
+        HiringSrv.getStatusList(function (response) {
+            $scope.hiringStatusList = response.data;
+        });
+
+        MarriageStatusSrv.getList(function (response) {
+            $scope.marriageStatusList = response.data;
+        });
+
+        MilitaryServiceSrv.getList(function (response) {
+            $scope.militaryServiceList = response.data;
+        });
+
+        ContractTypeSrv.getList(function (response) {
+            $scope.contractTypeList = response.data;
+        });
+
+        EducationLevelSrv.getList(function (response) {
+            $scope.educationLevelList = response.data;
+        });
+        
+        DependantTypeSrv.getList(function (response) {
+            $scope.dependantTypeList = response.data;
+        });
+
+        ExternalSourceSrv.getList(function (response) {
+            $scope.externalSourceList = response.data;
+        });
+
+        LeaveTypeSrv.getList(function (response) {
+            $scope.leaveTypeList = response.data;
+        });
+
+        RelationshipSrv.getList(function (response) {
+            $scope.relationshipList = response.data;
+        });
+
+        BenefitSrv.getList(function (response) {
+            $scope.benefitTypeList = response.data;
+        });
+
+        ResignSrv.getReasonList(function (response) {
+            $scope.resignReasonList = response.data;
+        });
+
+        SkillSrv.getList(function (response) {
+            $scope.skillsList = response.data;
+        });
+
+        ShiftNoteSrv.getList(function (response) {
+            $scope.shiftNotesList = response.data;
+        });
+
+        LanguageSrv.getList(function (response) {
+            $scope.languageList = response.data;
+        });
+
+        LanguageSrv.getLevelList(function (response) {
+            $scope.languageLevelList = response.data;
+        });
+    };
+
+    $scope.getHiringStatus = function () {
+        var userid = $scope.user.id;
+
+        HiringSrv.getHiringStatus(userid, function (response) {
+
+            if (response.status !== 0) {
+                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                return;
+            } else {
+                var active = response.data;
+                if (active === 1) {
+                    $scope.active = true;
+                    $scope.notactive = false;
+                    $scope.longleave = false;
+                } else if (active === 2) {
+                    $scope.notactive = true;
+                    $scope.active = false;
+                    $scope.longleave = false;
+                } else if (active === 3) {
+                    $scope.longleave = true;
+                    $scope.notactive = false;
+                    $scope.active = false;
+                }
+            }
+        });
+
+    };
+    $scope.viewDetails = function () {
+        $scope.disableMode = true;
+    };
+
+    $scope.editDetails = function () {
+        $scope.disableMode = false;
+    };
+
+    $scope.savePersonalDetails = function () {
+        var userid = $scope.user.id;
+        var username = $scope.user.username;
+        var uid = $scope.user.personalCard.uid;
+        var regnum = $scope.user.personalCard.regnum;
+        var outregnum = $scope.user.personalCard.outregnum;
+        var firstName = $scope.user.personalCard.firstName;
+        var lastName = $scope.user.personalCard.lastName;
+        var sexId = $scope.user.personalCard.sex.id;
+        var marriageStatusId = $scope.user.familyStatus.marriageStatus.id;
+        var marriageStatusDoe = Date.parse($scope.user.familyStatus.marriageStatusDoe);
+        var fatherName = $scope.user.personalCard.fatherName;
+        var motherName = $scope.user.personalCard.motherName;
+        var dob = Date.parse($scope.user.personalCard.dob);
+        var birthplace = $scope.user.personalCard.birthplace;
+        var identity = $scope.user.personalCard.identity;
+        var identityDoe = Date.parse($scope.user.personalCard.identityDoe);
+        var authority = $scope.user.personalCard.authority;
+        //var educationLevelId = $scope.user.education.educationLevel.id;
+        var militaryServiceId = $scope.user.personalCard.militaryService.id;
+
+        EmployeeSrv.editPersonalDetails(userid, username, uid, regnum, outregnum, firstName, lastName, sexId, marriageStatusId, marriageStatusDoe, fatherName, motherName,
+                dob, birthplace, identity, identityDoe, authority, militaryServiceId, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                });
+    };
+
+    $scope.saveFinancialCardDetails = function () {
+
+        var userid = $scope.user.id;
+        var tin = $scope.user.financialCard.tin;
+        var irs = $scope.user.financialCard.irs;
+        var account = $scope.user.financialCard.payrollAccount;
+        var ama = $scope.user.financialCard.ama;
+        var amka = $scope.user.financialCard.amka;
+
+        var accountDoe = Date.parse($scope.user.financialCard.payrollAccountDoe);
+        accountDoe = accountDoe ? accountDoe : null;
+
+        EmployeeSrv.editFinancialDetails(userid, account, accountDoe, tin, irs, ama, amka, function (response) {
+
+            if (response.status !== 0) {
+                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                return;
+            } else
+                toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+        });
+    };
+
+    $scope.saveContactDetails = function () {
+
+        var userid = $scope.user.id;
+        var email = $scope.user.contactCard.email;
+        var phoneNumber = $scope.user.contactCard.phoneNumber;
+        var mobilePhone = $scope.user.contactCard.mobilePhone;
+        var street = $scope.user.address.street;
+        var number = $scope.user.address.number;
+        var city = $scope.user.address.city;
+        var postalCode = $scope.user.address.postalCode;
+        var district = $scope.user.address.district;
+        var country = $scope.user.address.country;
+
+        EmployeeSrv.editContactDetails(userid, email, phoneNumber, mobilePhone, street, number, city, postalCode, district, country, function (response) {
+
+            if (response.status !== 0) {
+                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                return;
+            } else
+                toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+        });
+
+    };
+
+
+
+
+
+
+    $scope.saveAllPersonalDetails = function () {
+
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+
+                $scope.savePersonalDetails();
+                $scope.saveFinancialCardDetails();
+                $scope.saveContactDetails();
+            }
+        });
+
+    };
+
+    $scope.selectHiringSource = function () {
+
+        $scope.externalCollabolator = false;
+        var hiringSourceId = $scope.user.hiring.hiringSource.id;
+
+        HiringSrv.getExternalCollabolatorSource(function (response) {
+
+            if (response.status !== 0) {
+                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                return;
+            }
+
+            if (hiringSourceId == response.data.id)
+                $scope.externalCollabolator = true;
+        });
+
+    };
+
+    $scope.selectJobType = function () {
+
+        $scope.jtDoe = false;
+        var jobTypeId = $scope.user.hiring.jobType.id;
+
+        JobTypeSrv.getFte(jobTypeId, function (response) {
+
+            if (response.status !== 0) {
+                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                return;
+            }
+
+            if (jobTypeId == response.data.id)
+                $scope.jtDoe = true;
+
+            if (response.data.id === $scope.part_time_4_id)
+                $scope.user.hiring.ftes = $scope.half_fte;
+            if (response.data.id === $scope.part_time_6_id)
+                $scope.user.hiring.ftes = $scope.three_fourth_ftes;
+            if (response.data.id === $scope.full_time_8_id)
+                $scope.user.hiring.ftes = $scope.one_fte;
+            if (response.data.id === $scope.full_time_12_id)
+                $scope.user.hiring.ftes = $scope.one_half_fte;
+
+        });
+    };
+
+    $scope.saveWorkingDetails = function () {
+
+        var userid = $scope.user.id;
+        var hiringStatusId = $scope.user.hiring.hiringStatus.id;
+        var hiringStatusDoe = Date.parse($scope.user.hiring.hiringStatusDoe);
+        var jobTypeId = $scope.user.hiring.jobType.id;
+        var jobTypeDoe = Date.parse($scope.user.hiring.jobTypeDoe);
+        var ftes = $scope.user.hiring.ftes;
+        var contractTypeId = $scope.user.hiring.contract.contractType.id;
+        var contractTypeDoe = Date.parse($scope.user.hiring.contractTypeDoe);
+        var contractId = $scope.user.hiring.contract.contractId;
+        var contractValidDoe = Date.parse($scope.user.hiring.contract.contractValidDoe);
+        var salary = $scope.user.hiring.contract.salary;
+        var salaryDoe = Date.parse($scope.user.hiring.contract.salaryDoe);
+        var hDate = Date.parse($scope.user.hiring.contract.hiringDate);
+        var vacation = $scope.user.hiring.vacation;
+        var remainingVacation = $scope.user.hiring.remainingVacation;
+        var eDate = null;
+        if ($scope.user.hiring.contract.expiringDate !== null)
+            eDate = Date.parse($scope.user.hiring.contract.expiringDate);
+
+        var hiringSourceId = $scope.user.hiring.hiringSource.id;
+
+        var outsourcerId = null;
+        if ($scope.user.hiring.outsourcer !== null)
+            outsourcerId = $scope.user.hiring.outsourcer.id;
+
+        var branch = $scope.user.hiring.branch;
+        var cardNumber = $scope.user.hiring.cardNumber;
+        var cardNumberDoe = Date.parse($scope.user.hiring.cardNumberDoe);
+        var origin = $scope.user.hiring.origin;
+
+        var rDate = null;
+        if ($scope.user.hiring.resign !== null && $scope.user.hiring.resign.resignDate !== null)
+            rDate = Date.parse($scope.user.hiring.resign.resignDate);
+
+        var resignReason = null;
+        if ($scope.user.hiring.resign !== null && $scope.user.hiring.resign.resignReason.id !== null)
+            resignReason = $scope.user.hiring.resign.resignReason.id;
+
+        var street = $scope.user.hiring.address.street;
+        var number = $scope.user.hiring.address.number;
+        var region = $scope.user.hiring.address.region;
+        var city = $scope.user.hiring.address.city;
+        var postalCode = $scope.user.hiring.address.postalCode;
+        var country = $scope.user.hiring.address.country;
+
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.editWorkingDetails(userid, hiringStatusId, hiringStatusDoe, jobTypeId, jobTypeDoe, ftes, contractTypeId, contractTypeDoe, contractId, contractValidDoe, salary, salaryDoe, vacation, remainingVacation, hDate, eDate, hiringSourceId, outsourcerId, branch, cardNumber,
+                        cardNumberDoe, origin, rDate, resignReason, street, number, region, city, postalCode, country, function (response) {
+
+                            if (response.status !== 0) {
+                                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                                return;
+                            } else
+                                toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                        });
+            }
+        });
+    };
+
+    $scope.addWorkingExperience = function () {
+        var userid = $scope.user.id;
+
+        var df = Date.parse($scope.workExperienceInfo.fromDate);
+        var dt = Date.parse($scope.workExperienceInfo.toDate);
+        var company = $scope.workExperienceInfo.employer;
+        var position = $scope.workExperienceInfo.position;
+
+        EmployeeSrv.addWorkingExperienceDetails(userid, df, dt, company, position, function (response) {
+
+            if (response.status !== 0) {
+                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                return;
+            } else {
+                $scope.workExperienceInfo = {};
+                
+                EmployeeSrv.getWorkingExperiencePage($scope.user.id, 1, function (response) {
+                    $scope.user.workingExperiences = response.data;
+                });
+                RequestsSrv.getWorkingExperienceCount($scope.user.id, function (response) {
+                    $scope.onWorkingExperienceSetup(response.data);
+                });
+
+                $('#workingExperienceInfoModal').modal('hide');
+                toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+            }
+        });
+    };
+
+    $scope.getWorkingExperience = function (id) {
+        $scope.editMode = true;
+        $scope.workExperienceInfo = {};
+        EmployeeSrv.getWorkingExperienceDetails(id, function (response) {
+            $scope.workExperienceInfo = response.data;
+        });
+    };
+
+    $scope.editWorkingExperience = function () {
+        var userid = $scope.user.id;
+        var id = $scope.workExperienceInfo.id;
+
+        var df = Date.parse($scope.workExperienceInfo.fromDate);
+        var dt = Date.parse($scope.workExperienceInfo.toDate);
+        var company = $scope.workExperienceInfo.employer;
+        var position = $scope.workExperienceInfo.position;
+        $('#workingExperienceInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.editWorkingExperienceDetails(userid, id, df, dt, company, position, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.workingExperiences, 'id', response.data.id, function (vd, kd) {
+                            $scope.user.workingExperiences.splice(kd, 1);
+                            $scope.user.workingExperiences.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.workExperienceInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#workingExperienceInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.deleteWorkingExperience = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.deleteWorkingExperienceDetails(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        EmployeeSrv.getWorkingExperiencePage($scope.user.id, 1, function (response) {
+                            $scope.user.workingExperiences = response.data;
+                        });
+                        RequestsSrv.getWorkingExperienceCount($scope.user.id, function (response) {
+                            $scope.onWorkingExperienceSetup(response.data);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.deleteAvatar = function () {
+        $scope.userId = $scope.user.id;
+        $scope.id = $scope.user.personalCard.avatar.id;
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.deleteAvatar($scope.userId, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.user.personalCard.avatar.source = {};
+                        Human.utils.find($scope.user.personalCard.avatar, 'id', $scope.id, function (vd, kd) {
+                            $scope.user.personalCard.avatar.splice(kd, 1);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+
+    $scope.removeWorkingExperienceModal = function () {
+        $scope.workExperienceInfo = {};
+        $scope.editMode = false;
+
+        $('#workingExperienceInfoModal').modal('hide');
+    };
+
+    $scope.addContactPerson = function () {
+        var userid = $scope.user.id;
+
+        var name = $scope.contactPersonInfo.name;
+        var email = $scope.contactPersonInfo.email;
+        var phoneNumber = $scope.contactPersonInfo.phoneNumber;
+        var address = $scope.contactPersonInfo.address;
+        var relationshipId = $scope.contactPersonInfo.relationship.id;
+
+
+        $('#contactPersonInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.addContactPersonDetails(userid, name, email, phoneNumber, address, relationshipId, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.contactPersonInfo = {};
+                        
+                        EmployeeSrv.getContactsPage($scope.user.id, 1, function (response) {
+                            $scope.user.contactPersons = response.data;
+                        });
+                        EmployeeSrv.getContactsCount($scope.user.id, function(response) {
+                            $scope.onContactsSetup(response.data);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else
+            {
+                $('#contactPersonInfoModal').modal('show');
+            }
+        });
+
+    };
+
+    $scope.getContactPerson = function (id) {
+        $scope.editMode = true;
+        $scope.contactPersonInfo = {};
+        EmployeeSrv.getContactPersonDetails(id, function (response) {
+            $scope.contactPersonInfo = response.data;
+        });
+    };
+
+    $scope.editContactPerson = function () {
+        var userid = $scope.user.id;
+        var id = $scope.contactPersonInfo.id;
+        var name = $scope.contactPersonInfo.name;
+        var email = $scope.contactPersonInfo.email;
+        var phoneNumber = $scope.contactPersonInfo.phoneNumber;
+        var address = $scope.contactPersonInfo.address;
+        var relationshipId = $scope.contactPersonInfo.relationship.id;
+        $('#contactPersonInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.editContactPersonDetails(userid, id, name, email, phoneNumber, address, relationshipId, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.contactPersons, 'id', response.data.id, function (vd, kd) {
+                            $scope.user.contactPersons.splice(kd, 1);
+                            $scope.user.contactPersons.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.contactPersonInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#contactPersonInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.deleteContactPerson = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.deleteContactPersonDetails(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        EmployeeSrv.getContactsPage($scope.user.id, 1, function (response) {
+                            $scope.user.contactPersons = response.data;
+                        });
+                        EmployeeSrv.getContactsCount($scope.user.id, function(response) {
+                            $scope.onContactsSetup(response.data);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.removeContactPersonModal = function () {
+        $scope.contactPersonInfo = {};
+        $scope.editMode = false;
+
+        $('#contactPersonInfoModal').modal('hide');
+    };
+
+    $scope.addRecommendation = function () {
+        var userid = $scope.user.id;
+
+        var fname = $scope.recommendationInfo.recommender.fname;
+        var lname = $scope.recommendationInfo.recommender.lname;
+        var company = $scope.recommendationInfo.recommender.company;
+        $('#recommendationInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+
+            if (result) {
+                RecommendationSrv.addRecommendation(userid, fname, lname, company, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.recommendationInfo = {};
+                        
+                        RecommendationSrv.getRecommendationsPage($scope.user.id, 1, function (response) {
+                            $scope.user.recommendations = response.data;
+                        });
+                        RecommendationSrv.getRecommendationsCount($scope.user.id, function(response) {
+                            $scope.onRecommendationsSetup(response.data);
+                        });
+
+                        $('#recommendationInfoModal').modal('hide');
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#recommendationInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.editRecommendation = function () {
+        var id = $scope.recommendationInfo.id;
+        var fname = $scope.recommendationInfo.recommender.fname;
+        var lname = $scope.recommendationInfo.recommender.lname;
+        var company = $scope.recommendationInfo.recommender.company;
+        $('#recommendationInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                RecommendationSrv.editRecommendation(id, fname, lname, company, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.recommendations, 'id', response.data.id, function (vd, kd) {
+                            $scope.user.recommendations.splice(kd, 1);
+                            $scope.user.recommendations.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.recommendationInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+
+                $('#recommendationInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.getRecommendation = function (id) {
+        $scope.editMode = true;
+        $scope.recommendationInfo = {};
+
+        RecommendationSrv.getRecommendation(id, function (response) {
+            $scope.recommendationInfo = response.data;
+        });
+    };
+
+    $scope.deleteRecommendation = function (id) {
+
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                RecommendationSrv.deleteRecommendation(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        RecommendationSrv.getRecommendationsPage($scope.user.id, 1, function (response) {
+                            $scope.user.recommendations = response.data;
+                        });
+                        RecommendationSrv.getRecommendationsCount($scope.user.id, function(response) {
+                            $scope.onRecommendationsSetup(response.data);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.removeRecommendationModal = function () {
+        $scope.recommendationInfo = {};
+        $scope.editMode = false;
+
+        $('#recommendationInfoModal').modal('hide');
+    };
+
+    $scope.addUserNote = function () {
+        var userId = $scope.user.id;
+        var note = $scope.noteInfo.note;
+        $('#noteInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                NoteSrv.addNote(userId, note, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.noteInfo = {};
+                        NoteSrv.getUserNotesPage($scope.user.id, 1, function (response) {
+                            $scope.user.notes = response.data;
+                        });
+                        NoteSrv.getUserNotesCount($scope.user.id, function (response) {
+                            $scope.onUserNotesSetup(response.data);
+                        });
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else
+            {
+                $('#noteInfoModal').modal('show');
+            }
+        });
+    };
+
+
+    $scope.getUserNote = function (id) {
+        $scope.editMode = true;
+        $scope.noteInfo = {};
+        NoteSrv.getNote(id, function (response) {
+            $scope.noteInfo = response.data;
+        });
+    };
+
+    $scope.editUserNote = function () {
+        var userId = $scope.user.id;
+        var note = $scope.noteInfo.note;
+        var id = $scope.noteInfo.id;
+        $('#noteInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                NoteSrv.editNote(id, note, userId, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.notes, 'id', response.data.id, function (vd, kd) {
+                            $scope.user.notes.splice(kd, 1);
+                            $scope.user.notes.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.noteInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#noteInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.deleteUserNote = function (id) {
+
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                NoteSrv.deleteNote(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        NoteSrv.getUserNotesPage($scope.user.id, 1, function (response) {
+                            $scope.user.notes = response.data;
+                        });
+                        NoteSrv.getUserNotesCount($scope.user.id, function (response) {
+                            $scope.onUserNotesSetup(response.data);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.removeNoteModal = function () {
+        $scope.noteInfo = {};
+        $scope.editMode = false;
+
+        $('#noteInfoModal').modal('hide');
+    };
+
+    $scope.addDependant = function () {
+        var userid = $scope.user.id;
+
+        var firstName = $scope.dependantInfo.firstName;
+        var lastName = $scope.dependantInfo.lastName;
+        var type = $scope.dependantInfo.type.id;
+        var sexId = $scope.dependantInfo.sex.id;
+        var dob;
+        if ($scope.dependantInfo.dob instanceof Date)
+            dob = Date.parse($scope.dependantInfo.dob);
+        else
+            dob = $scope.dependantInfo.dob;
+
+        var doe;
+        if ($scope.dependantInfo.doe instanceof Date)
+            doe = Date.parse($scope.dependantInfo.doe);
+        else
+            doe = $scope.dependantInfo.doe;
+        $('#dependantsInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.addDependantDetails(userid, firstName, lastName, type, dob, doe, sexId, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.dependantInfo = {};
+                        
+                        EmployeeSrv.getDependantPage($scope.user.id, 1, function (response2) {
+                            $scope.user.familyStatus.dependants = response2.data;
+                        });
+                        EmployeeSrv.getDependantCount($scope.user.id, function(response3) {
+                            $scope.onDependantsSetup(response3.data);
+                        });
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#dependantsInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.getDependant = function (id) {
+        $scope.editMode = true;
+        $scope.dependantInfo = {};
+
+        EmployeeSrv.getDependantDetails(id, function (response) {
+            $scope.dependantInfo = response.data;
+        });
+    };
+
+    $scope.editDependant = function () {
+        var userid = $scope.user.id;
+        var id = $scope.dependantInfo.id;
+        var firstName = $scope.dependantInfo.firstName;
+        var lastName = $scope.dependantInfo.lastName;
+        var type = $scope.dependantInfo.type.id;
+        var sexId = $scope.dependantInfo.sex.id;
+        var dob;
+        if ($scope.dependantInfo.dob instanceof Date)
+            dob = Date.parse($scope.dependantInfo.dob);
+        else
+            dob = $scope.dependantInfo.dob;
+
+        var doe;
+        if ($scope.dependantInfo.doe instanceof Date)
+            doe = Date.parse($scope.dependantInfo.doe);
+        else
+            doe = $scope.dependantInfo.doe;
+
+        $('#dependantsInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.editDependantDetails(userid, id, firstName, lastName, type, dob, doe, sexId, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.familyStatus.dependants, 'id', response.data.id, function (vd, kd) {
+                            $scope.user.familyStatus.dependants.splice(kd, 1);
+                            $scope.user.familyStatus.dependants.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.dependantInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#dependantsInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.deleteDependant = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.deleteDependantDetails(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        EmployeeSrv.getDependantPage($scope.user.id, 1, function (response2) {
+                            $scope.user.familyStatus.dependants = response2.data;
+                        });
+                        EmployeeSrv.getDependantCount($scope.user.id, function(response3) {
+                            $scope.onDependantsSetup(response3.data);
+                        });
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.removeDependantModal = function () {
+        $scope.dependantInfo = {};
+        $scope.editMode = false;
+
+        $('#dependantsInfoModal').modal('hide');
+    };
+
+    $scope.selectBenefitType = function () {
+        $scope.benefitSupportValuesInfo = {};
+
+        var id = $scope.benefitInfo.benefitType.id;
+        EmployeeSrv.getBenefitSupportValueList(id, function (response) {
+
+            if (response.status !== 0) {
+                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                return;
+            } else
+                $scope.benefitSupportValuesInfo = response.data.benefitSupports;
+        });
+    };
+
+    $scope.addBenefit = function () {
+        var userid = $scope.user.id;
+        var id = $scope.benefitInfo.benefitType.id;
+
+        var benefitSupportValuesString = JSON.stringify($scope.benefitSupportValuesInfo);
+        $('#benefitsInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.addBenefitDetails(userid, id, benefitSupportValuesString, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        EmployeeSrv.getBenefitsPage($scope.user.id, 1, function (response) {
+                            $scope.user.benefits = response.data;
+                        });
+                        EmployeeSrv.getBenefitsCount($scope.user.id, function(response) {
+                            $scope.onBenefitsSetup(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.benefitInfo = {};
+                        $scope.benefitSupportValuesInfo = {};
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#benefitsInfoModal').modal('show');
+            }
+        });
+
+    };
+
+    $scope.getBenefit = function (id) {
+        $scope.editMode = true;
+        $scope.benefitInfo = {};
+        $scope.benefitSupportValuesInfo = {};
+
+        EmployeeSrv.getBenefitDetails(id, function (response) {
+            $scope.benefitInfo = response.data;
+            $scope.benefitSupportValuesInfo = response.data.benefitSupportValues;
+
+        });
+    };
+
+    $scope.editBenefit = function () {
+        var userid = $scope.user.id;
+        var id = $scope.benefitInfo.id;
+        var typeId = $scope.benefitInfo.benefitType.id;
+
+        var benefitSupportValuesString = JSON.stringify($scope.benefitSupportValuesInfo);
+        $('#benefitsInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.editBenefitDetails(userid, id, typeId, benefitSupportValuesString, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.benefits, 'id', id, function (vd, kd) {
+                            $scope.user.benefits.splice(kd, 1);
+                            $scope.user.benefits.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.benefitInfo = {};
+                        $scope.benefitSupportValuesInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#benefitsInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.deleteBenefit = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EmployeeSrv.deleteBenefitDetails(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        EmployeeSrv.getBenefitsPage($scope.user.id, 1, function (response) {
+                            $scope.user.benefits = response.data;
+                        });
+                        EmployeeSrv.getBenefitsCount($scope.user.id, function(response) {
+                            $scope.onBenefitsSetup(response.data);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.addSkill = function () {
+        var userid = $scope.user.id;
+        var skillid = $scope.skillInfo.id;
+        $('#skillsInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                SkillSrv.addUserSkill(userid, skillid, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.user.skills.push(response.data);
+                        $scope.skillInfo = {};
+
+                        SkillSrv.getSkillPage($scope.user.id, 1, function (response) {
+                            $scope.user.skills = response.data;
+                        });
+                        SkillSrv.getSkillCount($scope.user.id, function(response) {
+                            $scope.onSkillSetup(response.data);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#skillsInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.deleteSkill = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                SkillSrv.deleteUserSkill(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.skills, 'id', id, function (vd, kd) {
+                            $scope.user.skills.splice(kd, 1);
+                        });
+                        
+                        SkillSrv.getSkillPage($scope.user.id, 1, function (response) {
+                            $scope.user.skills = response.data;
+                        });
+                        SkillSrv.getSkillCount($scope.user.id, function(response) {
+                            $scope.onSkillSetup(response.data);
+                        });
+                        
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.addShiftNote = function () {
+        var userid = $scope.user.id;
+        var noteid = $scope.shiftNoteInfo.id;
+        var shiftDoe = Date.parse($scope.shiftNoteInfo.shiftDoe);
+        $('#shiftNotesInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                ShiftNoteSrv.addUserShiftNote(userid, noteid, shiftDoe, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.shiftNoteInfo = {};
+
+                        ShiftNoteSrv.getShiftNotePage($scope.user.id, 1, function (response) {
+                            $scope.user.shiftNotes = response.data;
+                        });
+                        ShiftNoteSrv.getShiftNoteCount($scope.user.id, function(response) {
+                            $scope.onShiftNotesSetup(response.data);
+                        });
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#shiftNotesInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.getShiftNote = function (id) {
+        $scope.editMode = true;
+        $scope.shiftNoteInfo = {};
+        ShiftNoteSrv.getUserShiftNote(id, function (response) {
+            $scope.shiftNoteInfo = response.data;
+        });
+    };
+    $scope.editShiftNote = function () {
+        var userId = $scope.user.id;
+        var id = $scope.shiftNoteInfo.id;
+        var shiftDoe = Date.parse($scope.shiftNoteInfo.shiftDoe);
+        $('#shiftNotesEditInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                ShiftNoteSrv.editUserShiftNote(id, userId, shiftDoe, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.notes, 'id', response.data.id, function (vd, kd) {
+                            $scope.user.notes.splice(kd, 1);
+                            $scope.user.notes.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.shiftNoteInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#shiftNotesEditInfoModal').modal('show');
+            }
+        });
+    };
+
+
+
+    $scope.deleteShiftNote = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                ShiftNoteSrv.deleteUserShiftNote(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        ShiftNoteSrv.getShiftNotePage($scope.user.id, 1, function (response) {
+                            $scope.user.shiftNotes = response.data;
+                        });
+                        ShiftNoteSrv.getShiftNoteCount($scope.user.id, function(response) {
+                            $scope.onShiftNotesSetup(response.data);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    /*$scope.deleteSkill = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                SkillSrv.deleteUserSkill(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.skills, 'id', id, function (vd, kd) {
+                            $scope.user.skills.splice(kd, 1);
+                        });
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };*/
+
+    $scope.addLanguageSkill = function () {
+        var userid = $scope.user.id;
+        var languageId = $scope.languageSkillInfo.language.id;
+        var doac = Date.parse($scope.languageSkillInfo.doac);
+        var certificate = $scope.languageSkillInfo.certificate;
+        var levelId = $scope.languageSkillInfo.level.id;
+        var otherLanguage = $scope.languageSkillInfo.otherLanguage;
+        $('#languageInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                LanguageSrv.addLanguageSkillDetails(userid, doac, otherLanguage, levelId, languageId, certificate, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.languageSkillInfo = {};
+                        
+                        LanguageSrv.getLanguagesPage($scope.user.id, 1, function (response) {
+                            $scope.user.education.languageSkills = response.data;
+                        });
+                        LanguageSrv.getLanguagesCount($scope.user.id, function(response) {
+                            $scope.onLanguageSetup(response.data);
+                        });
+
+                        $('#languageInfoModal').modal('hide');
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#languageInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.getLanguageSkill = function (id) {
+        $scope.editMode = true;
+        $scope.languageSkillInfo = {};
+
+        LanguageSrv.getLanguageSkillDetails(id, function (response) {
+            $scope.languageSkillInfo = response.data;
+        });
+    };
+
+    $scope.editLanguageSkill = function () {
+        var id = $scope.languageSkillInfo.id;
+        var userid = $scope.user.id;
+        var languageId = $scope.languageSkillInfo.language.id;
+        var doac = Date.parse($scope.languageSkillInfo.doac);
+        var certificate = $scope.languageSkillInfo.certificate;
+        var levelId = $scope.languageSkillInfo.level.id;
+        var otherLanguage = $scope.languageSkillInfo.otherLanguage;
+        $('#languageInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                LanguageSrv.editLanguageSkillDetails(userid, id, doac, otherLanguage, levelId, languageId, certificate, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.education.languageSkills, 'id', response.data.id, function (vd, kd) {
+                            $scope.user.education.languageSkills.splice(kd, 1);
+                            $scope.user.education.languageSkills.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.languageSkillInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#languageInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.deleteLanguageSkill = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                LanguageSrv.deleteLanguageSkillDetails(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        LanguageSrv.getLanguagesPage($scope.user.id, 1, function (response) {
+                            $scope.user.education.languageSkills = response.data;
+                        });
+                        LanguageSrv.getLanguagesCount($scope.user.id, function(response) {
+                            $scope.onLanguageSetup(response.data);
+                        });
+                        
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.addCertificateSkill = function () {
+        var userid = $scope.user.id;
+        var name = $scope.certificateSkillInfo.name;
+        var subject = $scope.certificateSkillInfo.subject;
+        var authority = $scope.certificateSkillInfo.authority;
+        var acquisitionDate = Date.parse($scope.certificateSkillInfo.acquisitionDate);
+        var expiredDate = Date.parse($scope.certificateSkillInfo.expiredDate);
+        $('#certificateSkillInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                CertificateSkillSrv.addCertificateSkillDetails(userid, name, subject, authority, acquisitionDate, expiredDate, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.user.education.certificateSkills.push(response.data);
+                        $scope.certificateSkillInfo = {};
+
+                        CertificateSkillSrv.getCertificatePage($scope.user.id, 1, function (response) {
+                            $scope.user.education.certificateSkills = response.data;
+                        });
+                        CertificateSkillSrv.getCertificateCount($scope.user.id, function(response) {
+                            $scope.onCertificateSetup(response.data);
+                        });
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#certificateSkillInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.getCertificateSkill = function (id) {
+        $scope.editMode = true;
+        $scope.certificateSkillInfo = {};
+
+        CertificateSkillSrv.getCertificateSkillDetails(id, function (response) {
+            $scope.certificateSkillInfo = response.data;
+        });
+    };
+
+    $scope.editCertificateSkill = function () {
+        var id = $scope.certificateSkillInfo.id;
+        var userid = $scope.user.id;
+        var name = $scope.certificateSkillInfo.name;
+        var subject = $scope.certificateSkillInfo.subject;
+        var authority = $scope.certificateSkillInfo.authority;
+        var acquisitionDate = Date.parse($scope.certificateSkillInfo.acquisitionDate);
+        var expiredDate = Date.parse($scope.certificateSkillInfo.expiredDate);
+        $('#certificateSkillInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+
+                CertificateSkillSrv.editCertificateSkillDetails(userid, id, name, subject, authority, acquisitionDate, expiredDate, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.education.certificateSkills, 'id', id, function (vd, kd) {
+                            $scope.user.education.certificateSkills.splice(kd, 1);
+                            $scope.user.education.certificateSkills.push(response.data);
+                        });
+
+                        $scope.certificateSkillInfo = {};
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#certificateSkillInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.deleteCertificateSkill = function (id) {
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                CertificateSkillSrv.deleteCertificateSkillDetails(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        /*Human.utils.find($scope.user.education.certificateSkills, 'id', id, function (vd, kd) {
+                            $scope.user.education.certificateSkills.splice(kd, 1);
+                        });*/
+                        CertificateSkillSrv.getCertificatePage($scope.user.id, 1, function (response) {
+                            $scope.user.education.certificateSkills = response.data;
+                        });
+                        CertificateSkillSrv.getCertificateCount($scope.user.id, function(response) {
+                            $scope.onCertificateSetup(response.data);
+                        });
+                        
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.addEducationDegree = function () {
+        var userid = $scope.user.id;
+        var educationLevelId = $scope.educationDegreeInfo.educationLevel.id;
+        var title = $scope.educationDegreeInfo.title;
+        var degreeTitle = $scope.educationDegreeInfo.degreeTitle;
+
+        var college = $scope.educationDegreeInfo.college;
+        var startDate = Date.parse($scope.educationDegreeInfo.startDate);
+        var endDate = Date.parse($scope.educationDegreeInfo.endDate);
+        $('#educationDegreeInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EducationDegreeSrv.addEducationDegreeDetails(userid, educationLevelId, startDate, endDate, title, degreeTitle, college, function (response) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        $scope.educationDegreeInfo = {};
+                        
+                        EducationDegreeSrv.getDegreesPage($scope.user.id, 1, function (response) {
+                            $scope.user.education.educationDegrees = response.data;
+                        });
+                        EducationDegreeSrv.getDegreesCount($scope.user.id, function(response) {
+                            $scope.onDegreesSetup(response.data);
+                        });
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#educationDegreeInfoModal').modal('show');
+            }
+        });
+    };
+
+    $scope.getEducationDegree = function (id) {
+        $scope.editMode = true;
+        $scope.educationDegreeInfo = {};
+
+        EducationDegreeSrv.getEducationDegreeDetails(id, function (response) {
+            $scope.educationDegreeInfo = response.data;
+        });
+    };
+
+    $scope.editEducationDegree = function () {
+        var id = $scope.educationDegreeInfo.id;
+        var userid = $scope.user.id;
+        var educationLevelId = $scope.educationDegreeInfo.educationLevel.id;
+        var title = $scope.educationDegreeInfo.title;
+        var degreeTitle = $scope.educationDegreeInfo.degreeTitle;
+
+        var college = $scope.educationDegreeInfo.college;
+        var startDate = Date.parse($scope.educationDegreeInfo.startDate);
+        var endDate = Date.parse($scope.educationDegreeInfo.endDate);
+        $('#educationDegreeInfoModal').modal('hide');
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EducationDegreeSrv.editEducationDegreeDetails(userid, id, educationLevelId, startDate, endDate, title, degreeTitle, college, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else {
+                        Human.utils.find($scope.user.education.educationDegrees, 'id', response.data.id, function (vd, kd) {
+                            $scope.user.education.educationDegrees.splice(kd, 1);
+                            $scope.user.education.educationDegrees.push(response.data);
+                        });
+
+                        $scope.editMode = false;
+                        $scope.dependantInfo = {};
+
+
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            } else {
+                $('#educationDegreeInfoModal').modal('show');
+            }
+        });
+    };
+
+
+
+    /*
+     
+     $scope.editEducationDegree = function () {
+     var id = $scope.educationDegreeInfo.id;
+     var userid = $scope.user.id;
+     var educationLevelId = $scope.educationDegreeInfo.educationLevel.id;
+     var title = $scope.educationDegreeInfo.title;
+     var degreeTitle = $scope.educationDegreeInfo.degreeTitle;
+     
+     var college = $scope.educationDegreeInfo.college;
+     var startDate = Date.parse($scope.educationDegreeInfo.startDate);
+     var endDate = Date.parse($scope.educationDegreeInfo.endDate);
+     
+     EducationDegreeSrv.editEducationDegreeDetails(userid, id, educationLevelId, startDate, endDate, degreeTitle, college, function (response) {
+     if (response.status !== 0) {
+     toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+     return;
+     } else {
+     Human.utils.find($scope.user.education.educationDegrees, 'id', id, function (vd, kd) {
+     $scope.user.education.educationDegrees.splice(kd, 1);
+     $scope.user.education.educationDegrees.push(response.data);
+     });
+     
+     $scope.educationDegreeInfo = {};
+     $('#educationDegreeInfoModal').modal('hide');
+     toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+     }
+     });
+     };
+     */
+    $scope.deleteEducationDegree = function (id) {
+
+        bootbox.confirm(TranslationSrv.translate($scope.messageConfirm), function (result) {
+            if (result) {
+                EducationDegreeSrv.deleteEducationDegreeDetails(id, function (response) {
+
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                        return;
+                    } else { 
+                        EducationDegreeSrv.getDegreesPage($scope.user.id, 1, function (response) {
+                            $scope.user.education.educationDegrees = response.data;
+                        });
+                        EducationDegreeSrv.getDegreesCount($scope.user.id, function(response) {
+                            $scope.onDegreesSetup(response.data);
+                        });
+                        
+                        toaster.pop('success', "Success!", TranslationSrv.translate(response.message), 5000, 'trustedHtml');
+                    }
+                });
+            }
+        });
+    };
+
+    $scope.removeEducationDegreeModal = function () {
+        $scope.editMode = false;
+        $scope.educationDegreeInfo = {};
+        $('#educationDegreeInfoModal').modal('hide');
+    };
+
+    $scope.removeCertificateSkillModal = function () {
+        $scope.editMode = false;
+        $scope.certificateSkillInfo = {};
+        $('#certificateSkillInfoModal').modal('hide');
+    };
+
+    $scope.removeLanguageSkillModal = function () {
+        $scope.editMode = false;
+        $scope.languageSkillInfo = {};
+        $('#languageInfoModal').modal('hide');
+    };
+
+    $scope.removeSkillsModal = function () {
+        $scope.editMode = false;
+        $scope.skillInfo = {};
+        $('#skillsInfoModal').modal('hide');
+    };
+
+    $scope.removeShiftNotesModal = function () {
+        $scope.editMode = false;
+        $scope.shiftNoteInfo = {};
+        $('#shiftNotesInfoModal').modal('hide');
+    };
+
+    $scope.removeShiftNotesEditModal = function () {
+        $scope.editMode = false;
+        $scope.shiftNoteInfo = {};
+        $('#shiftNotesEditInfoModal').modal('hide');
+    };
+
+    $scope.removeBenefitModal = function () {
+        $scope.editMode = false;
+        $scope.benefitInfo = {};
+        $scope.benefitSupportValuesInfo = {};
+
+        $('#benefitsInfoModal').modal('hide');
+    };
+
+    $scope.selectResignReason = function () {
+        if ($scope.user.hiring.resign.resignReason.id > 0)
+            $scope.resignReason = true;
+        else
+            $scope.resignReason = false;
+    };
+
+    $scope.selectContractType = function () {
+        $scope.contractType = false;
+        $scope.ctDoe = false;
+
+        ContractTypeSrv.getFixedTermContractType(function (response) {
+            if (response.status !== 0) {
+                toaster.pop('error', "Error!", TranslationSrv.translate(response.message), 5000);
+                return;
+            }
+
+            if ($scope.user.hiring.contract.contractType.id === response.data.id) {
+                $scope.contractType = true;
+            }
+            
+            if ($scope.user.hiring.contract.contractType.id !== response.data.id) {
+                $scope.ctDoe = true;
+            }
+        });
+    };
+
+    $scope.selectMarriageStatus = function () {
+        $scope.msDoe = true;
+    };
+
+    $scope.selectIdentity = function () {
+        $scope.idDoe = true;
+    };
+
+    $scope.selectHiringStatus = function () {
+        $scope.hsDoe = true;
+    };
+
+    $scope.selectCardNumber = function () {
+        $scope.cnDoe = true;
+    };
+    
+    $scope.selectSalary = function () {
+        $scope.salDoe = true;
+    };
+
+    $scope.selectPayrollAccount = function () {
+        $scope.payAccDoe = true;
+    };
+
+    $scope.open = function ($event, e) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.opened[e] = true;
+    };
+
+    $scope.upload = function (files) {
+        $scope.progress = [];
+        if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                $scope.progress[file.name] = 0;
+                Upload.upload({
+                    url: Human.utils.apiCall.image.upload.replace(':user', $scope.user.id),
+                    fields: {},
+                    file: file
+                }).progress(function (evt) {
+                    var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    $scope.progress[evt.config.file.name] = progressPercentage;
+                    console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                }).success(function (response, status, headers, config) {
+                    if (response.status !== 0) {
+                        toaster.pop('error', "Oups!", response.message, 5000, 'trustedHtml');
+                        return;
+                    }
+                    console.log('file ' + config.file.name + 'uploaded. Response: ' + response.message);
+                    $scope.user.personalCard.avatar = response.data;
+                });
+            }
+        }
+    };
+    
+    $scope.onDependantsPageSelect = function (p){
+        EmployeeSrv.getDependantPage($scope.user.id, p, function (response) {
+            $scope.user.familyStatus.dependants = response.data;
+        });
+    };
+    
+    $scope.onBenefitsPageSelect = function (p) {
+        EmployeeSrv.getBenefitsPage($scope.user.id, p, function (response) {
+            $scope.user.benefits = response.data;
+        });
+    };
+    
+    $scope.onContactsPageSelect = function (p) {
+        EmployeeSrv.getContactsPage($scope.user.id, p, function (response) {
+            $scope.user.contactPersons = response.data;
+        });
+    };
+    
+    $scope.onRecommendationsPageSelect = function (p) {
+        EmployeeSrv.getRecommendationsPage($scope.user.id, p, function (response) {
+            $scope.user.recommendations = response.data;
+        });
+    };
+    
+    $scope.onDegreesPageSelect = function (p) {
+        EmployeeSrv.getRecommendationsPage($scope.user.id, p, function (response) {
+            $scope.user.education.educationDegrees = response.data;
+        });
+    };
+    
+    $scope.onLanguagePageSelect = function (p) {
+        LanguageSrv.getLanguagesPage($scope.user.id, p, function (response) {
+            $scope.user.education.languageSkills = response.data;
+        });
+    };
+    
+    $scope.onCertificatePageSelect = function (p) {
+        CertificateSkillSrv.getCertificatePage($scope.user.id, p, function (response) {
+            $scope.user.education.certificateSkills = response.data;
+        });
+    };
+    
+    $scope.onSkillPageSelect = function (p) {
+        SkillSrv.getSkillPage($scope.user.id, p, function (response) {
+            $scope.user.skills = response.data;
+        });
+    };
+    
+    $scope.onShiftNotesPageSelect = function (p) {
+        ShiftNoteSrv.getShiftNotePage($scope.user.id, p, function (response) {
+            $scope.user.shiftNotes = response.data;
+        });
+    };
+    
+    $scope.onWorkingExperiencePageSelect = function (p) {
+        EmployeeSrv.getWorkingExperiencePage($scope.user.id, p, function (response) {
+            $scope.user.workingExperiences = response.data;
+        });
+    };
+    
+    $scope.onUserNotesPageSelect = function (p) {
+        NoteSrv.getUserNotesPage($scope.user.id, p, function (response) {
+            $scope.user.notes = response.data;
+        });
+    };
+
+    $scope.__init__();
+});
+
+

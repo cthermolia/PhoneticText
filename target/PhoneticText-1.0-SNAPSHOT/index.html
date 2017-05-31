@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html ng-app="PhoneticTextApp">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="icon" href="images/favicon.ico" type="image/png" sizes="16x16">
+
+        <!-- BOOTSTRAP -->
+        <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+        <!-- THEME -->
+        <link href="css/jquery-ui/ui-darkness/jquery-ui.min.css" rel="stylesheet" type="text/css">
+        <link href="css/main.css" rel="stylesheet" type="text/css">
+        <link href="css/bootstrap.vertical-tabs.min.css" rel="stylesheet" type="text/css">
+
+        <link rel="stylesheet" href="css/angular-block-ui.min.css">
+        <link rel="stylesheet" href="css/toaster.css" type="text/css">  
+
+        <link rel="stylesheet" href="css/jstree/themes/default/style.min.css" />
+        <link rel="stylesheet" href="css/angular-material.min.css">
+
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <title ng-bind="'PhoneticText | ' + title"></title>
+    </head>
+    <body>
+<!--        <div class="alert alert-danger" ng-show="isLoggedIn() && !isConfirmed()">
+            * <span hm-translate="user.confirm_account"></span>
+        </div>-->
+    <ng-view hm-tooltip></ng-view>
+    <toaster-container style="top:60px;" toaster-options="{'time-out': 5000, 'close-button':true}"></toaster-container>
+
+    <!-- JQUERY --> 
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.11.2.js"></script>
+    <script type="text/javascript" src="js/jquery.bootpag.min.js"></script>
+    <script type="text/javascript" src="js/jstree.min.js"></script>
+    <script type="text/javascript" src="js/tableHeadFixer.js"></script>
+
+
+
+    <!-- BOOTSTRAP -->
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+    <!-- THEME -->
+    <script type="text/javascript" src="js/PhoneticText.js"></script>
+<!--    <script type="text/javascript" src="js/highcharts/highcharts.js"></script>
+    <script type="text/javascript" src="js/highcharts/modules/exporting.js"></script>-->
+
+    <!-- ANGULAR -->
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/angular-route.min.js"></script>
+    <script type="text/javascript" src="js/angular-cookies.min.js"></script>
+    <script type="text/javascript" src="js/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="js/angular-animate.min.js"></script>
+    <script type="text/javascript" src="js/angular-block-ui.min.js"></script>
+    <script type="text/javascript" src="js/angular-messages.js"></script>
+    <script type="text/javascript" src="js/toaster.js"></script>
+    <script type="text/javascript" src="js/ui-bootstrap-tpls-0.14.2.min.js"></script>
+    <script type="text/javascript" src="js/ng-file-upload-shim.min.js"></script>
+    <script type="text/javascript" src="js/ng-file-upload.min.js"></script> 
+    <script type="text/javascript" src="js/ng-csv.min.js"></script>
+
+ 
+    <script type="text/javascript" src="js/angular-aria.min.js"></script>
+    <script type="text/javascript" src="js/angular-material.min.js"></script>
+    
+       <script type="text/javascript" src="js/bootbox.js"></script>
+    <script type="text/javascript" src="js/bootbox.min.js"></script>
+
+    <!-- ANGULAR CTRL-->
+     <script type="text/javascript" src="mvc/controller/Config.js"></script>
+      <script type="text/javascript" src="mvc/controller/TextCtrl.js"></script>
+       <script type="text/javascript" src="mvc/model/TextSrv.js"></script>
+<!--    <script type="text/javascript" src="mvc/controller/Config.js"></script>
+    <script type="text/javascript" src="mvc/controller/Filters.js"></script>
+    <script type="text/javascript" src="mvc/controller/Directives.js"></script>
+    <script type="text/javascript" src="mvc/controller/TaxonomyDirective.js"></script>
+    <script type="text/javascript" src="mvc/controller/ChartsDirectives.js"></script>
+    <script type="text/javascript" src="mvc/controller/AuthCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/DashoboardCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ProfileCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/SearchFormCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/SearchCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/UsersCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/BpmCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/MigrationCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/EmployeeCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ReportsCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ShiftsCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/StaffingCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/TrainingCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/PayrollCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/HiringCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ChartCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/UserSettingsCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ChartSettingsCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/AuditingCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ShiftsSettingsCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/requests/LeaveRequestsCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/requests/ChangeShiftsRequestsCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ShiftTemplateCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/tasks/TaskLeaveRequestCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/tasks/TaskChangeShiftRequestCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/tasks/TaskClaimCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/tasks/TaskOvertimeRequestCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ShiftPlanCtrl_2.js"></script>
+    <script type="text/javascript" src="mvc/controller/LeavePlanningCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/ReportShiftCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/NotChartUsersCtrl.js"></script>
+    <script type="text/javascript" src="mvc/controller/WithoutValidSupervisorUsersCtrl.js"></script>
+
+     ANGULAR SRV
+    <script type="text/javascript" src="mvc/model/AuthSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/UserSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/BpmSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/MigrationSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/SearchSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/SearchSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/HiringSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ExternalSourceSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/EmployeeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/EducationLevelSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ContractTypeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/AccessGroupSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/JobTypeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/LeaveTypeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/MarriageStatusSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/MilitaryServiceSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/SexSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/TranslationSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ReportsSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/RelationshipSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/BenefitSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ResignSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/BusinessRoleSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/AccessHierarchySrv.js"></script>
+    <script type="text/javascript" src="mvc/model/UnitSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/TeamSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/DepartmentSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/HierarchyLevelSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/AuditingSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ShiftsSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/DayOffSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ErlangFormulaSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/RequestsSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ShiftNoteSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/SkillSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/LanguageSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/SubTeamSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/DayOffTypeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/DayOffWeightSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ShiftTypeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/NoteSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/RequestStatusSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/CertificateSkillSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/EducationDegreeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/RecommendationSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/DependantTypeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/BuildingAccessGroupSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/OutsourcerSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/SemanticsTypeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/BenefitTypeSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/OrganizationSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/SubGroupSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/ShiftReportSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/HistorySrv.js"></script>
+    <script type="text/javascript" src="mvc/model/LeaveSrv.js"></script>
+    <script type="text/javascript" src="mvc/model/LeaveTypeCodeSrv.js"></script>-->
+</body>
+</html>
